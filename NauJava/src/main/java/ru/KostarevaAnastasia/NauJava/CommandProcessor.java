@@ -2,7 +2,7 @@ package ru.KostarevaAnastasia.NauJava;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import ru.KostarevaAnastasia.NauJava.businessLogic.QuestionService;
+import ru.KostarevaAnastasia.NauJava.businessLogic.QuestionServiceOld;
 import ru.KostarevaAnastasia.NauJava.models.Question;
 
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import java.util.List;
 @Component
 public class CommandProcessor
 {
-    private final QuestionService questionService;
+    private final QuestionServiceOld questionService;
     @Autowired
-    public CommandProcessor(QuestionService questionService)
+    public CommandProcessor(QuestionServiceOld questionService)
     {
         this.questionService = questionService;
     }
@@ -55,16 +55,6 @@ public class CommandProcessor
             {
                 questionService.updateTheme(Long.valueOf(cmd[1]), cmd[2]);
                 System.out.println("Тема вопроса успешно обновлена...");
-            }
-            case "addOption" ->
-            {
-                questionService.addOption(Long.valueOf(cmd[1]), cmd[2]);
-                System.out.println("Вариант ответа успешно добавлен...");
-            }
-            case "delOption" ->
-            {
-                questionService.deleteOption(Long.valueOf(cmd[1]), cmd[2]);
-                System.out.println("Вариант ответа успешно удален...");
             }
             default -> System.out.println("Введена неизвестная команда...");
         }

@@ -1,4 +1,4 @@
-package ru.KostarevaAnastasia.NauJava.dataAccessLayer;
+package ru.KostarevaAnastasia.NauJava.DataAccessLayer;
 
 public interface CrudRepository<T, ID>
 {

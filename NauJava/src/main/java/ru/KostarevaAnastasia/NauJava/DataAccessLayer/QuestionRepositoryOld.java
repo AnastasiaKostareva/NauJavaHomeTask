@@ -1,4 +1,4 @@
-package ru.KostarevaAnastasia.NauJava.dataAccessLayer;
+package ru.KostarevaAnastasia.NauJava.DataAccessLayer;
 
 import java.util.List;
 import java.util.Objects;
@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import ru.KostarevaAnastasia.NauJava.models.Question;
 @Component
-public class QuestionRepository implements CrudRepository<Question, Long>
+public class QuestionRepositoryOld implements CrudRepository<Question, Long>
 {
     private final List<Question> questionContainer;
     @Autowired
-    public QuestionRepository(List<Question> questionContainer)
+    public QuestionRepositoryOld(List<Question> questionContainer)
     {
         this.questionContainer = questionContainer;
     }
@@ -50,4 +50,3 @@ public class QuestionRepository implements CrudRepository<Question, Long>
         }
     }
 }
-

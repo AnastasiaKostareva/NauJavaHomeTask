@@ -1,12 +1,20 @@
 package ru.KostarevaAnastasia.NauJava.models;
 
-import java.util.List;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "questions")
 public class Question {
+    @Id
+    @GeneratedValue
     private Long id;
+    @Column
     private String textQuestion;
+    @Column
     private String theme;
-    private List<String> options;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private QuestionType questionType;
 
     public Long getId()
     {
@@ -16,6 +24,15 @@ public class Question {
     public void setId(Long id)
     {
         this.id = id;
+    }
+
+    public Question() {}
+
+    public Question(Long id, String textQuestion, String theme, QuestionType  questionType) {
+        this.id = id;
+        this.questionType = questionType;
+        this.textQuestion = textQuestion;
+        this.theme = theme;
     }
 
     public String getTextQuestion()
@@ -38,14 +55,14 @@ public class Question {
         this.theme = theme;
     }
 
-    public List<String> getOptions()
+    public QuestionType getQuestionType()
     {
-        return options;
+        return questionType;
     }
 
-    public void setOptions(List<String> options)
+    public void setQuestionType(QuestionType questionType)
     {
-        this.options = options;
+        this.questionType = questionType;
     }
 
     @Override
@@ -54,7 +71,9 @@ public class Question {
                 "id=" + id +
                 ", text='" + textQuestion + '\'' +
                 ", theme='" + theme + '\'' +
-                ", options=" + options +
+                ", questionType=" + questionType +
                 '}';
     }
 }
+
+
