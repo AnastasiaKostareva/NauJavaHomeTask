@@ -204,6 +204,4 @@ public class UserAnswerTest {
         assertEquals(1, user2Answers.size());
         assertEquals(user2Id, user2Answers.get(0).getUserID());
     }
-
-
 }
