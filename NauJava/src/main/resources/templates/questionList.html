@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Question List</title>
+</head>
+<body>
+<h1>Question List</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Text</th>
+        <th>Theme</th>
+        <th>Type</th>
+    </tr>
+    <tr th:each="question : ${questions}">
+        <td th:text="${question.id}"></td>
+        <td th:text="${question.textQuestion}"></td>
+        <td th:text="${question.theme}"></td>
+        <td th:text="${question.questionType}"></td>
+    </tr>
+</table>
+</body>
+</html>
