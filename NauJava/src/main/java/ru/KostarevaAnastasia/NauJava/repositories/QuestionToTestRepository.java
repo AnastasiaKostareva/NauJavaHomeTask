@@ -10,8 +10,17 @@ import ru.KostarevaAnastasia.NauJava.repositories.custom.CustomQuestionToTestRep
 import java.util.List;
 
 @RepositoryRestResource(path = "questions-to-tests")
+/**
+ * Репозиторий для связей между вопросами и тестами
+ */
 public interface QuestionToTestRepository
-        extends CrudRepository<QuestionToTest, Long> {
-
+        extends CrudRepository<QuestionToTest, QuestionToTestId> {
+    /**
+     * Находит связи вопросов с тестом по идентификатору теста и диапазону порядковых номеров
+     * @param testId идентификатор теста
+     * @param minOrder минимальное значение порядкового номера
+     * @param maxOrder максимальное значение порядкового номера
+     * @return список связей
+     */
     List<QuestionToTest> findByTestIdAndSortingOrderBetween(Long testId, Integer minOrder, Integer maxOrder);
 }

@@ -66,10 +66,10 @@ public class CreateQuestionTest {
         assertEquals("Mathematics", savedQuestion.get().getTheme());
         assertEquals(QuestionType.SINGLE, savedQuestion.get().getQuestionType());
 
-        List<Option> savedOptions = optionRepository.findByQuestionID(question.getId());
+        List<Option> savedOptions = optionRepository.findByQuestionId(question.getId());
         assertEquals(3, savedOptions.size());
 
-        assertTrue(savedOptions.stream().allMatch(option -> option.getQuestionID().equals(question.getId())));
+        assertTrue(savedOptions.stream().allMatch(option -> option.getQuestion().equals(question)));
 
         Option savedOption1 = savedOptions.get(0);
         Option savedOption2 = savedOptions.get(1);

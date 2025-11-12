@@ -1,14 +1,12 @@
 package ru.KostarevaAnastasia.NauJava;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import ru.KostarevaAnastasia.NauJava.models.Question;
-import ru.KostarevaAnastasia.NauJava.models.QuestionType;
-import ru.KostarevaAnastasia.NauJava.models.UserAnswer;
-import ru.KostarevaAnastasia.NauJava.repositories.QuestionRepository;
-import ru.KostarevaAnastasia.NauJava.repositories.UserAnswerRepository;
+import ru.KostarevaAnastasia.NauJava.models.*;
+import ru.KostarevaAnastasia.NauJava.repositories.*;
 
 import java.util.List;
 
@@ -18,11 +16,27 @@ import static org.junit.jupiter.api.Assertions.*;
 @DirtiesContext
 @Transactional
 public class UserAnswerTest {
+
     @Autowired
     private UserAnswerRepository userAnswerRepository;
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private OptionRepository optionRepository;
+
+    @Autowired
+    private TestRepository testRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private User createUser(Long id) {
+        User user = new User();
+        user.setId(id);
+        return user;
+    }
 
     /**
      * Тестирование поиска ответов пользователя по ID пользователя и теме вопроса
@@ -47,28 +61,57 @@ public class UserAnswerTest {
         questionHistory.setQuestionType(QuestionType.SINGLE);
         questionHistory = questionRepository.save(questionHistory);
 
-        Long userId = 1L;
-        Long testId = 1L;
+        Option optionMath1 = optionRepository.save(createOption(questionMath1));
+        Option optionMath2 = optionRepository.save(createOption(questionMath2));
+        Option optionHistory = optionRepository.save(createOption(questionHistory));
+
+        User user = new User();
+        user.setName("Test User");
+        user.setLogin("testuser");
+        user.setRole(Role.USER);
+        user = userRepository.save(user);
+        Long userId = user.getId();
+        var test = new ru.KostarevaAnastasia.NauJava.models.Test();
+        test.setTitle("new Test");
+        test = testRepository.save(test);
 
         UserAnswer userAnswerMath1 = new UserAnswer();
-        userAnswerMath1.setUserID(userId);
-        userAnswerMath1.setQuestionID(questionMath1.getId());
-        userAnswerMath1.setTestID(testId);
-        userAnswerMath1.setOptionID(101L);
+        userAnswerMath1.setId(new UserAnswerId(
+                user.getId(),
+                optionMath1.getId(),
+                test.getId(),
+                questionMath1.getId()
+        ));
+        userAnswerMath1.setUser(user);
+        userAnswerMath1.setQuestion(questionMath1);
+        userAnswerMath1.setTest(test);
+        userAnswerMath1.setOption(optionMath1);
         userAnswerRepository.save(userAnswerMath1);
 
         UserAnswer userAnswerMath2 = new UserAnswer();
-        userAnswerMath2.setUserID(userId);
-        userAnswerMath2.setQuestionID(questionMath2.getId());
-        userAnswerMath2.setTestID(testId);
-        userAnswerMath2.setOptionID(102L);
+        userAnswerMath2.setId(new UserAnswerId(
+                user.getId(),
+                optionMath2.getId(),
+                test.getId(),
+                questionMath2.getId()
+        ));
+        userAnswerMath2.setUser(user);
+        userAnswerMath2.setQuestion(questionMath2);
+        userAnswerMath2.setTest(test);
+        userAnswerMath2.setOption(optionMath2);
         userAnswerRepository.save(userAnswerMath2);
 
         UserAnswer userAnswerHistory = new UserAnswer();
-        userAnswerHistory.setUserID(userId);
-        userAnswerHistory.setQuestionID(questionHistory.getId());
-        userAnswerHistory.setTestID(testId);
-        userAnswerHistory.setOptionID(201L);
+        userAnswerHistory.setId(new UserAnswerId(
+                user.getId(),
+                optionHistory.getId(),
+                test.getId(),
+                questionHistory.getId()
+        ));
+        userAnswerHistory.setUser(user);
+        userAnswerHistory.setQuestion(questionHistory);
+        userAnswerHistory.setTest(test);
+        userAnswerHistory.setOption(optionHistory);
         userAnswerRepository.save(userAnswerHistory);
 
         List<UserAnswer> mathAnswers = userAnswerRepository.findByUserIdAndQuestionTheme(userId, "Mathematics");
@@ -76,8 +119,8 @@ public class UserAnswerTest {
         assertEquals(2, mathAnswers.size());
 
         for (UserAnswer answer : mathAnswers) {
-            assertEquals(userId, answer.getUserID());
-            Question question = questionRepository.findById(answer.getQuestionID()).orElse(null);
+            assertEquals(userId, answer.getUser().getId());
+            Question question = questionRepository.findById(answer.getQuestion().getId()).orElse(null);
             assertNotNull(question);
             assertEquals("Mathematics", question.getTheme());
         }
@@ -87,10 +130,10 @@ public class UserAnswerTest {
         assertEquals(1, historyAnswers.size());
 
         UserAnswer historyAnswer = historyAnswers.get(0);
-        assertEquals(userId, historyAnswer.getUserID());
-        assertEquals(questionHistory.getId(), historyAnswer.getQuestionID());
+        assertEquals(userId, historyAnswer.getUser().getId());
+        assertEquals(questionHistory.getId(), historyAnswer.getQuestion().getId());
 
-        Question historyQuestion = questionRepository.findById(historyAnswer.getQuestionID()).orElse(null);
+        Question historyQuestion = questionRepository.findById(historyAnswer.getQuestion().getId()).orElse(null);
         assertNotNull(historyQuestion);
         assertEquals("History", historyQuestion.getTheme());
     }
@@ -100,8 +143,15 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_NoAnswersForTheme() {
-        Long userId = 2L;
-        Long testId = 2L;
+        User user = new User();
+        user.setName("Test User");
+        user.setLogin("testuser");
+        user.setRole(Role.USER);
+        user = userRepository.save(user);
+        Long userId = user.getId();
+        var test = new ru.KostarevaAnastasia.NauJava.models.Test();
+        test.setTitle("new Test2");
+        test = testRepository.save(test);
 
         Question questionPhysics = new Question();
         questionPhysics.setTextQuestion("What is gravity?");
@@ -109,11 +159,19 @@ public class UserAnswerTest {
         questionPhysics.setQuestionType(QuestionType.SINGLE);
         questionPhysics = questionRepository.save(questionPhysics);
 
+        Option option = optionRepository.save(createOption(questionPhysics));
+
         UserAnswer userAnswerPhysics = new UserAnswer();
-        userAnswerPhysics.setUserID(userId);
-        userAnswerPhysics.setQuestionID(questionPhysics.getId());
-        userAnswerPhysics.setTestID(testId);
-        userAnswerPhysics.setOptionID(301L);
+        userAnswerPhysics.setId(new UserAnswerId(
+                user.getId(),
+                option.getId(),
+                test.getId(),
+                questionPhysics.getId()
+        ));
+        userAnswerPhysics.setUser(user);
+        userAnswerPhysics.setQuestion(questionPhysics);
+        userAnswerPhysics.setTest(test);
+        userAnswerPhysics.setOption(option);
         userAnswerRepository.save(userAnswerPhysics);
 
         List<UserAnswer> biologyAnswers = userAnswerRepository.findByUserIdAndQuestionTheme(userId, "Biology");
@@ -141,8 +199,15 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_NonExistentTheme() {
-        Long userId = 3L;
-        Long testId = 3L;
+        User user = new User();
+        user.setName("Test User");
+        user.setLogin("testuser");
+        user.setRole(Role.USER);
+        user = userRepository.save(user);
+        Long userId = user.getId();
+        var test = new ru.KostarevaAnastasia.NauJava.models.Test();
+        test.setTitle("new Test3");
+        test = testRepository.save(test);
 
         Question question = new Question();
         question.setTextQuestion("Sample question");
@@ -150,11 +215,19 @@ public class UserAnswerTest {
         question.setQuestionType(QuestionType.SINGLE);
         question = questionRepository.save(question);
 
+        Option option = optionRepository.save(createOption(question));
+
         UserAnswer userAnswer = new UserAnswer();
-        userAnswer.setUserID(userId);
-        userAnswer.setQuestionID(question.getId());
-        userAnswer.setTestID(testId);
-        userAnswer.setOptionID(401L);
+        userAnswer.setId(new UserAnswerId(
+                user.getId(),
+                option.getId(),
+                test.getId(),
+                question.getId()
+        ));
+        userAnswer.setUser(user);
+        userAnswer.setQuestion(question);
+        userAnswer.setTest(test);
+        userAnswer.setOption(option);
         userAnswerRepository.save(userAnswer);
 
         List<UserAnswer> results = userAnswerRepository.findByUserIdAndQuestionTheme(userId, "NonExistentTheme");
@@ -168,9 +241,21 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_MultipleUsers() {
-        Long user1Id = 10L;
-        Long user2Id = 20L;
-        Long testId = 10L;
+        User user1 = new User();
+        user1.setName("Test User");
+        user1.setLogin("testuser");
+        user1.setRole(Role.USER);
+        user1 = userRepository.save(user1);
+        Long user1Id = user1.getId();
+        User user2 = new User();
+        user2.setName("Test User");
+        user2.setLogin("testuser");
+        user2.setRole(Role.USER);
+        user2 = userRepository.save(user2);
+        Long user2Id = user2.getId();
+        var test = new ru.KostarevaAnastasia.NauJava.models.Test();
+        test.setTitle("new Test4");
+        test = testRepository.save(test);
 
         Question questionMath = new Question();
         questionMath.setTextQuestion("Algebra question");
@@ -178,30 +263,50 @@ public class UserAnswerTest {
         questionMath.setQuestionType(QuestionType.SINGLE);
         questionMath = questionRepository.save(questionMath);
 
+        Option option = optionRepository.save(createOption(questionMath));
+
         UserAnswer user1Answer = new UserAnswer();
-        user1Answer.setUserID(user1Id);
-        user1Answer.setQuestionID(questionMath.getId());
-        user1Answer.setTestID(testId);
-        user1Answer.setOptionID(501L);
+        user1Answer.setId(new UserAnswerId(
+                user1.getId(),
+                option.getId(),
+                test.getId(),
+                questionMath.getId()
+        ));
+        user1Answer.setUser(createUser(user1Id));
+        user1Answer.setQuestion(questionMath);
+        user1Answer.setTest(test);
+        user1Answer.setOption(createOption(questionMath));
         userAnswerRepository.save(user1Answer);
 
         UserAnswer user2Answer = new UserAnswer();
-        user2Answer.setUserID(user2Id);
-        user2Answer.setQuestionID(questionMath.getId());
-        user2Answer.setTestID(testId);
-        user2Answer.setOptionID(502L);
+        user2Answer.setId(new UserAnswerId(
+                user2.getId(),
+                option.getId(),
+                test.getId(),
+                questionMath.getId()
+        ));
+        user2Answer.setUser(createUser(user2Id));
+        user2Answer.setQuestion(questionMath);
+        user2Answer.setTest(test);
+        user2Answer.setOption(createOption(questionMath));
         userAnswerRepository.save(user2Answer);
 
         List<UserAnswer> user1Answers = userAnswerRepository.findByUserIdAndQuestionTheme(user1Id, "Mathematics");
 
         assertNotNull(user1Answers);
         assertEquals(1, user1Answers.size());
-        assertEquals(user1Id, user1Answers.get(0).getUserID());
+        assertEquals(user1Id, user1Answers.get(0).getUser().getId());
 
         List<UserAnswer> user2Answers = userAnswerRepository.findByUserIdAndQuestionTheme(user2Id, "Mathematics");
 
         assertNotNull(user2Answers);
         assertEquals(1, user2Answers.size());
-        assertEquals(user2Id, user2Answers.get(0).getUserID());
+        assertEquals(user2Id, user2Answers.get(0).getUser().getId());
+    }
+
+    private ru.KostarevaAnastasia.NauJava.models.Option createOption(Question question) {
+        ru.KostarevaAnastasia.NauJava.models.Option option = new ru.KostarevaAnastasia.NauJava.models.Option();
+        option.setQuestion(question);
+        return option;
     }
 }

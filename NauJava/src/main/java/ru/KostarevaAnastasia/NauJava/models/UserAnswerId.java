@@ -1,53 +1,56 @@
 package ru.KostarevaAnastasia.NauJava.models;
 
+import jakarta.persistence.Embeddable;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class UserAnswerId implements Serializable {
-    private Long userID;
-    private Long optionID;
-    private Long testID;
-    private Long questionID;
+    private Long userId;
+    private Long optionId;
+    private Long testId;
+    private Long questionId;
 
     public UserAnswerId() {}
 
     public UserAnswerId(Long userID, Long optionID, Long testID, Long questionID) {
-        this.userID = userID;
-        this.optionID = optionID;
-        this.testID = testID;
-        this.questionID = questionID;
+        this.userId = userID;
+        this.optionId = optionID;
+        this.testId = testID;
+        this.questionId = questionID;
     }
 
-    public Long getUserID() {
-        return userID;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
+    public void setUserId(Long userID) {
+        this.userId = userID;
     }
 
-    public Long getOptionID() {
-        return optionID;
+    public Long getOptionId() {
+        return optionId;
     }
 
-    public void setOptionID(Long optionID) {
-        this.optionID = optionID;
+    public void setOptionId(Long optionID) {
+        this.optionId = optionID;
     }
 
-    public Long getTestID() {
-        return testID;
+    public Long getTestId() {
+        return testId;
     }
 
-    public void setTestID(Long testID) {
-        this.testID = testID;
+    public void setTestId(Long testID) {
+        this.testId= testID;
     }
 
-    public Long getQuestionID() {
-        return questionID;
+    public Long getQuestionId() {
+        return questionId;
     }
 
-    public void setQuestionID(Long questionID) {
-        this.questionID = questionID;
+    public void setQuestionId(Long questionID) {
+        this.questionId = questionID;
     }
 
     @Override
@@ -55,14 +58,14 @@ public class UserAnswerId implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserAnswerId that = (UserAnswerId) o;
-        return Objects.equals(userID, that.userID) &&
-                Objects.equals(optionID, that.optionID) &&
-                Objects.equals(testID, that.testID) &&
-                Objects.equals(questionID, that.questionID);
+        return Objects.equals(userId, that.userId) &&
+                Objects.equals(optionId, that.optionId) &&
+                Objects.equals(testId, that.testId) &&
+                Objects.equals(questionId, that.questionId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userID, optionID, testID, questionID);
+        return Objects.hash(userId, optionId, testId, questionId);
     }
 }

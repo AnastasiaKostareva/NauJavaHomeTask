@@ -7,6 +7,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.KostarevaAnastasia.NauJava.models.*;
 import ru.KostarevaAnastasia.NauJava.repositories.QuestionRepository;
+import ru.KostarevaAnastasia.NauJava.repositories.QuestionToTestRepository;
 import ru.KostarevaAnastasia.NauJava.repositories.TestRepository;
 
 import jakarta.persistence.EntityManager;
@@ -31,6 +32,9 @@ class QuestionToTestCustomTest {
     @Autowired
     private TestRepository testRepository;
 
+    @Autowired
+    private QuestionToTestRepository questionToTestRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -39,21 +43,19 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_BasicScenario() {
-        var test = createTest("Basic Test", 1L);
-        Long testId = test.getId();
-
+        var test = createTest("Basic Test");
         Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE);
         Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE);
         Question question3 = createQuestion("Question 3", "History", QuestionType.MULTIPLE);
         Question question4 = createQuestion("Question 4", "Biology", QuestionType.SINGLE);
 
-        createQuestionToTest(testId, question1.getId(), 1, 5);
-        createQuestionToTest(testId, question2.getId(), 2, 10);
-        createQuestionToTest(testId, question3.getId(), 4, 8);
-        createQuestionToTest(testId, question4.getId(), 6, 7);
+        createQuestionToTest(test, question1, 1, 5);
+        createQuestionToTest(test, question2, 2, 10);
+        createQuestionToTest(test, question3, 4, 8);
+        createQuestionToTest(test, question4, 6, 7);
 
         List<QuestionToTest> result = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 2, 5);
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 2, 5);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -64,7 +66,7 @@ class QuestionToTestCustomTest {
                 .toList();
         assertEquals(List.of(2, 4), foundOrders);
 
-        assertTrue(result.stream().allMatch(qt -> qt.getTestId().equals(testId)));
+        assertTrue(result.stream().allMatch(qt -> qt.getTest().getId().equals(test.getId())));
     }
 
     /**
@@ -72,30 +74,25 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_BoundaryValues() {
-        var test = createTest("Boundary Test", 1L);
-        Long testId = test.getId();
-
+        var test = createTest("Boundary Test");
         Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE);
         Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE);
 
-        createQuestionToTest(testId, question1.getId(), 5, 5);
-        createQuestionToTest(testId, question2.getId(), 10, 8);
+        createQuestionToTest(test, question1, 5, 5);
+        createQuestionToTest(test, question2, 10, 8);
 
         List<QuestionToTest> exactMatch = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 5, 5);
-
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 5, 5);
         assertEquals(1, exactMatch.size());
         assertEquals(5, exactMatch.get(0).getSortingOrder());
 
         List<QuestionToTest> lowerBound = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 1, 5);
-
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 1, 5);
         assertEquals(1, lowerBound.size());
         assertEquals(5, lowerBound.get(0).getSortingOrder());
 
         List<QuestionToTest> upperBound = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 5, 15);
-
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 5, 15);
         assertEquals(2, upperBound.size());
 
         List<Integer> foundOrders = upperBound.stream()
@@ -105,8 +102,7 @@ class QuestionToTestCustomTest {
         assertEquals(List.of(5, 10), foundOrders);
 
         List<QuestionToTest> noResults = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 6, 9);
-
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 6, 9);
         assertEquals(0, noResults.size());
     }
 
@@ -115,25 +111,25 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_EmptyResult() {
-        var test = createTest("Empty Result Test", 1L);
-        Long testId = test.getId();
-
+        var test = createTest("Empty Result Test");
         Question question = createQuestion("Question 1", "Math", QuestionType.SINGLE);
-        createQuestionToTest(testId, question.getId(), 10, 5);
+        createQuestionToTest(test, question, 10, 5);
 
         List<QuestionToTest> result = customQuestionToTestRepository
-                .findQuestionToTestByTestIDAndSortingOrderBetween(testId, 1, 5);
+                .findQuestionToTestByTestIDAndSortingOrderBetween(test.getId(), 1, 5);
 
         assertNotNull(result);
         assertTrue(result.isEmpty(), "Результат должен быть пустым для диапазона 1-5");
     }
 
-
-
-    private ru.KostarevaAnastasia.NauJava.models.Test createTest(String title, Long creatorId) {
-        var test = new ru.KostarevaAnastasia.NauJava.models.Test();
+    private ru.KostarevaAnastasia.NauJava.models.Test createTest(String title) {
+        ru.KostarevaAnastasia.NauJava.models.Test test = new ru.KostarevaAnastasia.NauJava.models.Test();
         test.setTitle(title);
-        test.setCreatorID(creatorId);
+        User creator = new User();
+        creator.setName("tester");
+        creator.setRole(Role.USER);
+        entityManager.persist(creator);
+        test.setCreator(creator);
         return testRepository.save(test);
     }
 
@@ -145,9 +141,16 @@ class QuestionToTestCustomTest {
         return questionRepository.save(question);
     }
 
-    private void createQuestionToTest(Long testId, Long questionId, Integer sortingOrder, Integer points) {
-        QuestionToTest qt = new QuestionToTest(testId, questionId, sortingOrder, points);
-        entityManager.persist(qt);
-        entityManager.flush();
+    private void createQuestionToTest(ru.KostarevaAnastasia.NauJava.models.Test test, Question question, Integer sortingOrder, Integer points) {
+        QuestionToTest qt = new QuestionToTest();
+        qt.setId(new QuestionToTestId(
+                question.getId(),
+                test.getId()
+        ));
+        qt.setTest(test);
+        qt.setQuestion(question);
+        qt.setSortingOrder(sortingOrder);
+        qt.setNumberPoints(points);
+        questionToTestRepository.save(qt);
     }
 }

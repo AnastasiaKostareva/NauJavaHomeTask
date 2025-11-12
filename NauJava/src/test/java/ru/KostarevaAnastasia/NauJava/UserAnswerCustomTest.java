@@ -5,11 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
-import ru.KostarevaAnastasia.NauJava.models.Question;
-import ru.KostarevaAnastasia.NauJava.models.QuestionType;
-import ru.KostarevaAnastasia.NauJava.models.UserAnswer;
-import ru.KostarevaAnastasia.NauJava.repositories.QuestionRepository;
-import ru.KostarevaAnastasia.NauJava.repositories.UserAnswerRepository;
+import ru.KostarevaAnastasia.NauJava.models.*;
+import ru.KostarevaAnastasia.NauJava.repositories.*;
 import ru.KostarevaAnastasia.NauJava.repositories.custom.CustomUserAnswerRepository;
 
 import jakarta.persistence.EntityManager;
@@ -24,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 class UserAnswerCustomTest {
 
-    @Autowired
-    private CustomUserAnswerRepository customUserAnswerRepository; // Теперь будет работать
 
     @Autowired
     private UserAnswerRepository userAnswerRepository;
@@ -33,31 +28,93 @@ class UserAnswerCustomTest {
     @Autowired
     private QuestionRepository questionRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TestRepository testRepository;
+
+    @Autowired
+    private CustomUserAnswerRepository customUserAnswerRepository;
+
+    @Autowired
+    private OptionRepository optionRepository;
+
     @PersistenceContext
     private EntityManager entityManager;
+
+
+    private User createUser(String name) {
+        User user = new User();
+        user.setName(name);
+        user.setRole(Role.USER);
+        return userRepository.save(user);
+    }
+
+    private ru.KostarevaAnastasia.NauJava.models.Test createTest(String title) {
+        ru.KostarevaAnastasia.NauJava.models.Test test = new ru.KostarevaAnastasia.NauJava.models.Test();
+        test.setTitle(title);
+        return testRepository.save(test);
+    }
+
+    private Option createOption(String text, boolean correct, Question question) {
+        Option option = new Option();
+        option.setText(text);
+        option.setCorrect(correct);
+        option.setQuestion(question);
+        return optionRepository.save(option);
+    }
+
+    private Question createQuestion(String text, String theme, QuestionType type) {
+        Question question = new Question();
+        question.setTextQuestion(text);
+        question.setTheme(theme);
+        question.setQuestionType(type);
+        entityManager.persist(question);
+        entityManager.flush();
+        return question;
+    }
+
+    private UserAnswer createUserAnswer(User user, Question question, ru.KostarevaAnastasia.NauJava.models.Test test, Option option) {
+        UserAnswer ua = new UserAnswer();
+        ua.setId(new UserAnswerId(
+                user.getId(),
+                option.getId(),
+                test.getId(),
+                question.getId()
+        ));
+        ua.setUser(user);
+        ua.setQuestion(question);
+        ua.setTest(test);
+        ua.setOption(option);
+        return userAnswerRepository.save(ua);
+    }
 
     /**
      * Тестирование Criteria API метода для UserAnswer - разные пользователи
      */
     @Test
     void testFindUserAnswersByUserIdAndQuestionTheme_DifferentUsers() {
-        Long user1Id = 1L;
-        Long user2Id = 2L;
-        Long testId = 1L;
+        User user1 = createUser("user1");
+        User user2 = createUser("user2");
+        ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Math Test");
 
-        Question mathQuestion = createQuestion("Math", "Mathematics", QuestionType.SINGLE);
-        createUserAnswer(user1Id, mathQuestion.getId(), testId, 101L);
-        createUserAnswer(user2Id, mathQuestion.getId(), testId, 102L);
+        Question mathQuestion = createQuestion("2+2?", "Mathematics", QuestionType.SINGLE);
+        Option opt1 = createOption("3", false, mathQuestion);
+        Option opt2 = createOption("4", true, mathQuestion);
+
+        createUserAnswer(user1, mathQuestion, test, opt1);
+        createUserAnswer(user2, mathQuestion, test, opt2);
+
         List<UserAnswer> user1Answers = customUserAnswerRepository
-                .findUserAnswersByUserIdAndQuestionTheme(user1Id, "Mathematics");
-
+                .findUserAnswersByUserIdAndQuestionTheme(user1.getId(), "Mathematics");
         assertEquals(1, user1Answers.size());
-        assertEquals(user1Id, user1Answers.get(0).getUserID());
-        List<UserAnswer> user2Answers = customUserAnswerRepository
-                .findUserAnswersByUserIdAndQuestionTheme(user2Id, "Mathematics");
+        assertEquals(user1.getId(), user1Answers.get(0).getUser().getId());
 
+        List<UserAnswer> user2Answers = customUserAnswerRepository
+                .findUserAnswersByUserIdAndQuestionTheme(user2.getId(), "Mathematics");
         assertEquals(1, user2Answers.size());
-        assertEquals(user2Id, user2Answers.get(0).getUserID());
+        assertEquals(user2.getId(), user2Answers.get(0).getUser().getId());
     }
 
     /**
@@ -77,27 +134,29 @@ class UserAnswerCustomTest {
      */
     @Test
     void testFindUserAnswersByUserIdAndQuestionTheme_BasicScenario() {
-        Long userId = 1L;
-        Long testId = 1L;
+        User user = createUser("user");
+        ru.KostarevaAnastasia.NauJava.models.Test test = createTest("General Knowledge");
 
-        Question mathQuestion1 = createQuestion("Math 1", "Mathematics", QuestionType.SINGLE);
-        Question mathQuestion2 = createQuestion("Math 2", "Mathematics", QuestionType.MULTIPLE);
-        Question historyQuestion = createQuestion("History", "History", QuestionType.MULTIPLE);
-        Question physicsQuestion = createQuestion("Physics", "Physics", QuestionType.SINGLE);
+        Question math1 = createQuestion("2+2", "Mathematics", QuestionType.SINGLE);
+        Question math2 = createQuestion("3*3", "Mathematics", QuestionType.MULTIPLE);
+        Question history = createQuestion("WW2", "History", QuestionType.MULTIPLE);
+        Question physics = createQuestion("F=ma", "Physics", QuestionType.SINGLE);
 
-        createUserAnswer(userId, mathQuestion1.getId(), testId, 101L);
-        createUserAnswer(userId, mathQuestion2.getId(), testId, 102L);
-        createUserAnswer(userId, historyQuestion.getId(), testId, 201L);
-        createUserAnswer(userId, physicsQuestion.getId(), testId, 301L);
+        Option o1 = createOption("4", true, math1);
+        Option o2 = createOption("9", true, math2);
+        Option o3 = createOption("1939", true, history);
+        Option o4 = createOption("Newton", true, physics);
+
+        createUserAnswer(user, math1, test, o1);
+        createUserAnswer(user, math2, test, o2);
+        createUserAnswer(user, history, test, o3);
+        createUserAnswer(user, physics, test, o4);
 
         List<UserAnswer> mathAnswers = customUserAnswerRepository
-                .findUserAnswersByUserIdAndQuestionTheme(userId, "Mathematics");
+                .findUserAnswersByUserIdAndQuestionTheme(user.getId(), "Mathematics");
 
-        assertNotNull(mathAnswers);
         assertEquals(2, mathAnswers.size());
-
-        // Проверяем что все ответы принадлежат правильному пользователю
-        assertTrue(mathAnswers.stream().allMatch(ua -> ua.getUserID().equals(userId)));
+        assertTrue(mathAnswers.stream().allMatch(ua -> ua.getUser().getId().equals(user.getId())));
     }
 
     /**
@@ -105,58 +164,41 @@ class UserAnswerCustomTest {
      */
     @Test
     void testComparison_QueryVsCriteriaAPI() {
-        Long userId = 1L;
-        Long testId = 1L;
+        User user = createUser("user");
+        ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Comparison Test");
 
-        Question mathQuestion1 = createQuestion("Math 1", "Mathematics", QuestionType.SINGLE);
-        Question mathQuestion2 = createQuestion("Math 2", "Mathematics", QuestionType.MULTIPLE);
-        Question historyQuestion = createQuestion("History", "History", QuestionType.MULTIPLE);
+        Question math1 = createQuestion("Math Q1", "Mathematics", QuestionType.SINGLE);
+        Question math2 = createQuestion("Math Q2", "Mathematics", QuestionType.MULTIPLE);
+        Question history = createQuestion("Hist Q1", "History", QuestionType.MULTIPLE);
 
-        createUserAnswer(userId, mathQuestion1.getId(), testId, 101L);
-        createUserAnswer(userId, mathQuestion2.getId(), testId, 102L);
-        createUserAnswer(userId, historyQuestion.getId(), testId, 201L);
+        Option o1 = createOption("A", false, math1);
+        Option o2 = createOption("B", true, math2);
+        Option o3 = createOption("C", true, history);
+
+        createUserAnswer(user, math1, test, o1);
+        createUserAnswer(user, math2, test, o2);
+        createUserAnswer(user, history, test, o3);
 
         List<UserAnswer> queryResult = userAnswerRepository
-                .findByUserIdAndQuestionTheme(userId, "Mathematics");
+                .findByUserIdAndQuestionTheme(user.getId(), "Mathematics");
 
         List<UserAnswer> criteriaAPIResult = customUserAnswerRepository
-                .findUserAnswersByUserIdAndQuestionTheme(userId, "Mathematics");
+                .findUserAnswersByUserIdAndQuestionTheme(user.getId(), "Mathematics");
 
         assertNotNull(queryResult);
         assertNotNull(criteriaAPIResult);
-        assertEquals(queryResult.size(), criteriaAPIResult.size());
-
         assertEquals(2, queryResult.size());
         assertEquals(2, criteriaAPIResult.size());
 
-        List<Long> queryQuestionIds = queryResult.stream()
-                .map(UserAnswer::getQuestionID)
+        var queryIds = queryResult.stream()
+                .map(ua -> ua.getQuestion().getId())
                 .sorted()
                 .toList();
-        List<Long> criteriaAPIQuestionIds = criteriaAPIResult.stream()
-                .map(UserAnswer::getQuestionID)
+        var criteriaIds = criteriaAPIResult.stream()
+                .map(ua -> ua.getQuestion().getId())
                 .sorted()
                 .toList();
 
-        assertEquals(queryQuestionIds, criteriaAPIQuestionIds);
-    }
-
-
-    private Question createQuestion(String text, String theme, QuestionType type) {
-        Question question = new Question();
-        question.setTextQuestion(text);
-        question.setTheme(theme);
-        question.setQuestionType(type);
-        return questionRepository.save(question);
-    }
-
-    private void createUserAnswer(Long userId, Long questionId, Long testId, Long optionId) {
-        UserAnswer ua = new UserAnswer();
-        ua.setUserID(userId);
-        ua.setQuestionID(questionId);
-        ua.setTestID(testId);
-        ua.setOptionID(optionId);
-        entityManager.persist(ua);
-        entityManager.flush();
+        assertEquals(queryIds, criteriaIds);
     }
 }

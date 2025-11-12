@@ -10,12 +10,13 @@ public class Test {
     private Long id;
     @Column
     private String title;
-    @Column
-    private Long creatorID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private User creator;
 
-    public Test(Long id, String title, Long creatorID) {
+    public Test(Long id, String title, User creator) {
         this.id = id;
-        this.creatorID = creatorID;
+        this.creator = creator;
         this.title = title;
     }
     public Test(){}
@@ -36,13 +37,13 @@ public class Test {
     {
         this.title = title;
     }
-    public Long getCreatorID()
+    public User getCreator()
     {
-        return creatorID;
+        return creator;
     }
-    public void setCreatorID(Long id)
+    public void setCreator(User user)
     {
-        this.creatorID = id;
+        this.creator = user;
     }
 
     @Override
@@ -50,7 +51,7 @@ public class Test {
         return "Test{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", creator='" + creatorID +
+                ", creator='" + creator.getName() +
                 '}';
     }
 }

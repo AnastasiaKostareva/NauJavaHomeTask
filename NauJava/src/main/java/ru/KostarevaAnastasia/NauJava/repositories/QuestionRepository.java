@@ -6,6 +6,9 @@ import ru.KostarevaAnastasia.NauJava.models.Question;
 
 
 @RepositoryRestResource(path = "questions")
+/**
+ * Репозиторий для сущности Question
+ */
 public interface QuestionRepository extends CrudRepository<Question, Long> {
 }
 
