@@ -5,6 +5,9 @@ import ru.KostarevaAnastasia.NauJava.models.Option;
 
 import java.util.List;
 
+/**
+ * Сервис для управления вопросами и связанными с ними вариантами ответов.
+ */
 public interface QuestionService {
 
     /**

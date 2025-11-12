@@ -9,9 +9,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column
-    private String name;
+    private String username;
     @Column
-    private String login;
+    private String password;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -25,21 +25,18 @@ public class User {
     {
         this.id = id;
     }
-    public String getLogin()
+    public String getPassword() { return password;}
+    public void setPassword(String password)
     {
-        return login;
+        this.password = password;
     }
-    public void setLogin(String login)
+    public String getUsername()
     {
-        this.login = login;
+        return username;
     }
-    public String getName()
+    public void setUsername(String name)
     {
-        return name;
-    }
-    public void setName(String name)
-    {
-        this.name = name;
+        this.username = name;
     }
     public Role getRole()
     {
