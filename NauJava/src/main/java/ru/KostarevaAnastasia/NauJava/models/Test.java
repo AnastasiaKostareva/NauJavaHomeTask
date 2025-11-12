@@ -51,7 +51,7 @@ public class Test {
         return "Test{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", creator='" + creator.getName() +
+                ", creator='" + creator.getUsername() +
                 '}';
     }
 }

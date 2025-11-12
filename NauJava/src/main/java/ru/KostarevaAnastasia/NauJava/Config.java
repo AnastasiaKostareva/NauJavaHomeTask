@@ -45,6 +45,7 @@ public class Config
                         .requestMatchers("/registration", "/login", "/logout").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
                         .requestMatchers("/create/**").hasAuthority("ROLE_CREATOR")
+                        .requestMatchers("/api/reports/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
