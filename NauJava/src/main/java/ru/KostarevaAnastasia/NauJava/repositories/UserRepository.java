@@ -5,5 +5,8 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.KostarevaAnastasia.NauJava.models.User;
 
 @RepositoryRestResource(path = "users")
+/**
+ *  Репозиторий для сущности User
+ */
 public interface UserRepository extends CrudRepository<User, Long> {
 }

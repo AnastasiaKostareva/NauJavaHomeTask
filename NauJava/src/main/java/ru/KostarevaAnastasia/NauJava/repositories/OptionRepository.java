@@ -6,7 +6,15 @@ import ru.KostarevaAnastasia.NauJava.models.Option;
 
 import java.util.List;
 
+/**
+ *Репозиторий для сущности Option
+ */
 @RepositoryRestResource(path = "options")
 public interface OptionRepository extends CrudRepository<Option, Long> {
-    List<Option> findByQuestionID(Long questionId);
+    /**
+     *Возвращает все варианты ответов, связанные с указанным вопросом.
+     * @param questionId идентификатор вопроса
+     * @return список вариантов ответов
+     */
+    List<Option> findByQuestionId(Long questionId);
 }

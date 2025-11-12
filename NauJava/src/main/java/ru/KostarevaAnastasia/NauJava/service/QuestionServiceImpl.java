@@ -34,7 +34,7 @@ public class QuestionServiceImpl implements QuestionService
         {
             Question savedQuestion = questionRepository.save(question);
             for (Option option : options) {
-                option.setQuestionID(savedQuestion.getId());
+                option.setQuestion(savedQuestion);
                 optionRepository.save(option);
             }
             transactionManager.commit(status);
