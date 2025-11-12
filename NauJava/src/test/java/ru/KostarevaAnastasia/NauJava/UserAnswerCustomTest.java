@@ -46,7 +46,7 @@ class UserAnswerCustomTest {
 
     private User createUser(String name) {
         User user = new User();
-        user.setName(name);
+        user.setUsername(name);
         user.setRole(Role.USER);
         return userRepository.save(user);
     }
