@@ -6,12 +6,14 @@ import jakarta.persistence.*;
 @Table(name = "options")
 public class Option {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column
     private String text;
-    @Column
-    private Long questionID;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     public Option() {}
 
@@ -34,12 +36,12 @@ public class Option {
         isCorrect = correct;
     }
 
-    public Long getQuestionID() {
-        return questionID;
+    public Question getQuestion() {
+        return question;
     }
 
-    public void setQuestionID(Long questionID) {
-        this.questionID = questionID;
+    public void setQuestion(Question question) {
+        this.question = question;
     }
 
     public String getText() {

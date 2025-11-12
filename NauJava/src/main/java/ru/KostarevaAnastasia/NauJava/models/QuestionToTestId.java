@@ -1,8 +1,11 @@
 package ru.KostarevaAnastasia.NauJava.models;
 
+import jakarta.persistence.Embeddable;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@Embeddable
 public class QuestionToTestId implements Serializable {
     private Long questionId;
     private Long testId;

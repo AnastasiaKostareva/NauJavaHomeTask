@@ -26,7 +26,7 @@ public class CustomQuestionToTestRepositoryImpl implements CustomQuestionToTestR
         CriteriaQuery<QuestionToTest> query = criteriaBuilder.createQuery(QuestionToTest.class);
         Root<QuestionToTest> root = query.from(QuestionToTest.class);
 
-        Predicate predicateTestId = criteriaBuilder.equal(root.get("testId"), testId);
+        Predicate predicateTestId = criteriaBuilder.equal(root.get("test").get("id"), testId);
         Predicate predicateOrder = criteriaBuilder.between(root.get("sortingOrder"), minOrder, maxOrder);
 
         query.select(root).where(criteriaBuilder.and(predicateTestId, predicateOrder));

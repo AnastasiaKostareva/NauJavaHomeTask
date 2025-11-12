@@ -5,16 +5,20 @@ import jakarta.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "questionToTest")
-@IdClass(QuestionToTestId.class)
+@Table(name = "question_to_test")
 public class QuestionToTest {
-    @Id
-    @Column(name = "question_id")
-    private Long questionId;
+    @EmbeddedId
+    private QuestionToTestId id;
 
-    @Id
-    @Column(name = "test_id")
-    private Long testId;
+    @ManyToOne
+    @MapsId("questionId")
+    @JoinColumn(name = "question_id", nullable = false)
+    private Question question;
+
+    @ManyToOne
+    @MapsId("testId")
+    @JoinColumn(name = "test_id", nullable = false)
+    private Test test;
 
     @Column(name = "sorting_order")
     private Integer sortingOrder;
@@ -24,65 +28,39 @@ public class QuestionToTest {
 
     public QuestionToTest(){}
 
-    public QuestionToTest(Long idTest, Long idQuestion, Integer sorting, Integer points)
-    {
-        this.questionId = idQuestion;
-        this.testId = idTest;
-        this.numberPoints = points;
-        this.sortingOrder = sorting;
-    }
-
-    public Long getQuestionId()
-    {
-        return questionId;
-    }
-
-    public void setQuestionId(Long questionID)
-    {
-        this.questionId = questionID;
-    }
-
-    public Long getTestId()
-    {
-        return testId;
-    }
-
-    public void setTestId(Long testId)
-    {
-        this.testId = testId;
-    }
-
-    public Integer getSortingOrder()
-    {
-        return sortingOrder;
-    }
-
-    public void setSortingOrder(Integer sortingOrder)
-    {
+    public QuestionToTest(Question question, Test test, Integer sortingOrder, Integer numberPoints) {
+        this.question = question;
+        this.test = test;
         this.sortingOrder = sortingOrder;
-    }
-
-    public Integer getNumberPoints()
-    {
-        return numberPoints;
-    }
-
-    public void setNumberPoints(Integer numberPoints)
-    {
         this.numberPoints = numberPoints;
     }
+
+    public QuestionToTestId getId() { return id; }
+    public void setId(QuestionToTestId id) { this.id = id; }
+
+    public Question getQuestion() { return question; }
+    public void setQuestion(Question question) { this.question = question; }
+
+    public Test getTest() { return test; }
+    public void setTest(Test test) { this.test = test; }
+
+    public Integer getSortingOrder() { return sortingOrder; }
+    public void setSortingOrder(Integer sortingOrder) { this.sortingOrder = sortingOrder; }
+
+    public Integer getNumberPoints() { return numberPoints; }
+    public void setNumberPoints(Integer numberPoints) { this.numberPoints = numberPoints; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         QuestionToTest that = (QuestionToTest) o;
-        return Objects.equals(testId, that.testId) &&
-                Objects.equals(questionId, that.questionId);
+        return Objects.equals(test, that.test) &&
+                Objects.equals(question, that.question);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(testId, questionId);
+        return Objects.hash(test, question);
     }
 }

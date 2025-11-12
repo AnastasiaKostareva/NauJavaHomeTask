@@ -8,9 +8,17 @@ import ru.KostarevaAnastasia.NauJava.models.UserAnswerId;
 
 import java.util.List;
 
+/**
+ * Репозиторий для сущности UserAnswer с составным ключом UserAnswerId
+ */
 public interface UserAnswerRepository extends CrudRepository<UserAnswer, UserAnswerId> {
+    /**
+     * Находит ответы пользователя по идентификатору пользователя и теме вопроса
+     * @param userId идентификатор пользователя
+     * @param theme тема вопроса
+     * @return список сущностей UserAnswer
+     */
     @Query("SELECT ua FROM UserAnswer ua " +
-            "JOIN Question q ON ua.questionID = q.id " +
-            "WHERE ua.userID = :userId AND q.theme = :theme")
+            "WHERE ua.user.id = :userId AND ua.question.theme = :theme")
     List<UserAnswer> findByUserIdAndQuestionTheme(@Param("userId") Long userId, @Param("theme") String theme);
 }

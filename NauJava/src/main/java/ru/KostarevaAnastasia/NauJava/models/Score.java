@@ -10,12 +10,18 @@ public class Score {
     @Id
     @GeneratedValue
     private Long id;
-    @Column
-    private Long userID;
-    @Column
-    private Long testID;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_id")
+    private Test test;
+
     @Column
     private Integer score;
+
     @Column
     private Timestamp createdAt;
 
@@ -37,12 +43,12 @@ public class Score {
         this.score = score;
     }
 
-    public Long getTestID() {
-        return testID;
+    public Test getTest() {
+        return test;
     }
 
-    public void setTestID(Long testID) {
-        this.testID = testID;
+    public void setTest(Test test) {
+        this.test = test;
     }
 
     public Long getId() {
@@ -53,11 +59,11 @@ public class Score {
         this.id = id;
     }
 
-    public Long getUserID() {
-        return userID;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserID(Long userID) {
-        this.userID = userID;
+    public void setUser(User user) {
+        this.user = user;
     }
 }

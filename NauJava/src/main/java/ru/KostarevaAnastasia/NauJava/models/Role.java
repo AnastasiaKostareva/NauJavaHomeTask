@@ -1,6 +1,16 @@
 package ru.KostarevaAnastasia.NauJava.models;
 
+/**
+ * Роли пользователей в системе.
+ */
 public enum Role {
-    CREATOR,
-    STUDENT
+    /**
+     * Роль обычного пользователя.
+     */
+    USER,
+
+    /**
+     * Роль администратора.
+     */
+    ADMIN
 }
