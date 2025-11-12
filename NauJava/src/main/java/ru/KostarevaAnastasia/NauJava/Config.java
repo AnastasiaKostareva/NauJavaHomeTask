@@ -50,7 +50,7 @@ public class Config
                 .formLogin(form -> form
                         .permitAll()
                 )
-                .userDetailsService(userDetailsService); // ← ЭТО КЛЮЧЕВО!
+                .userDetailsService(userDetailsService);
 
         return http.build();
     }

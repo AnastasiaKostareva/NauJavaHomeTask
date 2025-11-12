@@ -24,12 +24,10 @@ public class RegistrationController {
     @PostMapping("/registration")
     public String adduser(User user, Model model)
     {
-        if (user.getRole() == null) {
-            user.setRole(Role.USER);
-        }
+        user.setRole(Role.USER);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         try
         {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
             userService.addUser(user);
             return "redirect:/login";
         }
