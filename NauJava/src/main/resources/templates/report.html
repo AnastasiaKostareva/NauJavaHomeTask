@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Отчёт приложения</title>
+</head>
+<body>
+<h2>Статистика приложения</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Показатель</th>
+        <th>Значение</th>
+        <th>Время выполнения (мс)</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Количество зарегистрированных в системе пользователей</td>
+        <td th:text="${userCount}">123</td>
+        <td th:text="${userTime}">45</td>
+    </tr>
+    <tr>
+        <td>Список вопросов</td>
+        <td>
+            <ul>
+                <li th:each="question : ${questions}" th:text="${question}">Вопрос 1</li>
+            </ul>
+        </td>
+        <td th:text="${questionTime}">67</td>
+    </tr>
+    <tr>
+        <td><strong>Общее время формирования отчёта</strong></td>
+        <td colspan="2">
+            <strong th:text="${totalTime + ' мс'}">100 мс</strong>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

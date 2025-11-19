@@ -66,8 +66,7 @@ public class UserAnswerTest {
         Option optionHistory = optionRepository.save(createOption(questionHistory));
 
         User user = new User();
-        user.setName("Test User");
-        user.setLogin("testuser");
+        user.setUsername("Test User");
         user.setRole(Role.USER);
         user = userRepository.save(user);
         Long userId = user.getId();
@@ -144,8 +143,7 @@ public class UserAnswerTest {
     @Test
     void testFindByUserIdAndQuestionTheme_NoAnswersForTheme() {
         User user = new User();
-        user.setName("Test User");
-        user.setLogin("testuser");
+        user.setUsername("Test User");
         user.setRole(Role.USER);
         user = userRepository.save(user);
         Long userId = user.getId();
@@ -200,8 +198,7 @@ public class UserAnswerTest {
     @Test
     void testFindByUserIdAndQuestionTheme_NonExistentTheme() {
         User user = new User();
-        user.setName("Test User");
-        user.setLogin("testuser");
+        user.setUsername("Test User");
         user.setRole(Role.USER);
         user = userRepository.save(user);
         Long userId = user.getId();
@@ -242,14 +239,12 @@ public class UserAnswerTest {
     @Test
     void testFindByUserIdAndQuestionTheme_MultipleUsers() {
         User user1 = new User();
-        user1.setName("Test User");
-        user1.setLogin("testuser");
+        user1.setUsername("Test User");
         user1.setRole(Role.USER);
         user1 = userRepository.save(user1);
         Long user1Id = user1.getId();
         User user2 = new User();
-        user2.setName("Test User");
-        user2.setLogin("testuser");
+        user2.setUsername("Test User");
         user2.setRole(Role.USER);
         user2 = userRepository.save(user2);
         Long user2Id = user2.getId();

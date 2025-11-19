@@ -126,7 +126,7 @@ class QuestionToTestCustomTest {
         ru.KostarevaAnastasia.NauJava.models.Test test = new ru.KostarevaAnastasia.NauJava.models.Test();
         test.setTitle(title);
         User creator = new User();
-        creator.setName("tester");
+        creator.setUsername("tester");
         creator.setRole(Role.USER);
         entityManager.persist(creator);
         test.setCreator(creator);

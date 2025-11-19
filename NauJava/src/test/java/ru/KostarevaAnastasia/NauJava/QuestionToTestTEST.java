@@ -123,7 +123,7 @@ class QuestionToTestTEST {
         ru.KostarevaAnastasia.NauJava.models.Test test = new ru.KostarevaAnastasia.NauJava.models.Test();
         test.setTitle(title);
         User user = new User();
-        user.setName("creator1");
+        user.setUsername("creator1");
         user.setRole(Role.USER);
         user = userRepository.save(user);
         test.setCreator(user);

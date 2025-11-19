@@ -50,7 +50,7 @@ public class UserAnswer {
     @Override
     public String toString() {
         return "UserAnswer{" +
-                "user=" + user.getName() +
+                "user=" + user.getUsername() +
                 ", option=" + option.getText() +
                 ", test=" + test.getTitle() +
                 ", question=" + question.getTextQuestion() +

@@ -18,7 +18,9 @@ public class QuestionToTestController {
     private CustomQuestionToTestRepository questionToTestRepository;
 
     @GetMapping("/by-test-and-order-range")
-    public List<QuestionToTest> findQuestionToTestByTestIDAndSortingOrderBetween(@RequestParam Long testId,@RequestParam Integer minOrder,@RequestParam Integer maxOrder)
+    public List<QuestionToTest> findQuestionToTestByTestIDAndSortingOrderBetween(@RequestParam(required = false) Long testId,
+                                                                                 @RequestParam(required = false) Integer minOrder,
+                                                                                 @RequestParam(required = false) Integer maxOrder)
     {
         if (testId == null || minOrder == null || maxOrder == null) {
             throw new IllegalArgumentException("parameters must not be null");
