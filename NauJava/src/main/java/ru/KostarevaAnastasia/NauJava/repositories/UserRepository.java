@@ -6,10 +6,10 @@ import ru.KostarevaAnastasia.NauJava.models.User;
 
 import java.util.Optional;
 
-@RepositoryRestResource(path = "users")
 /**
  *  Репозиторий для сущности User
  */
+@RepositoryRestResource(path = "users")
 public interface UserRepository extends CrudRepository<User, Long> {
     Optional<User> findByUsername(String name);
 }

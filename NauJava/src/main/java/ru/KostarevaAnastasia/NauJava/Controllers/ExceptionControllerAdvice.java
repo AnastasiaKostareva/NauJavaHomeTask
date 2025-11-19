@@ -23,4 +23,10 @@ public class ExceptionControllerAdvice {
     {
         return ApiError.create(e);
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiError handleIllegalArgumentException(IllegalArgumentException e) {
+        return ApiError.create(e);
+    }
 }

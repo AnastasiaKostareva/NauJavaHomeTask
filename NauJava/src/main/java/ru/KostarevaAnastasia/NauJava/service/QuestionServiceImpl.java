@@ -39,7 +39,7 @@ public class QuestionServiceImpl implements QuestionService
             }
             transactionManager.commit(status);
         }
-        catch (DataAccessException ex)
+        catch (RuntimeException ex)
         {
             transactionManager.rollback(status);
             throw ex;

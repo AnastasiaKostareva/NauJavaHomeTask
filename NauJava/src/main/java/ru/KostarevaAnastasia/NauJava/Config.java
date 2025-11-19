@@ -19,6 +19,7 @@ import ru.KostarevaAnastasia.NauJava.security.CustomUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
+@Profile("!test")
 public class Config
 {
     private final CustomUserDetailsService userDetailsService;
@@ -31,12 +32,6 @@ public class Config
 
     @Value("${app.version}")
     private String appVersion;
-
-    @Bean
-    public PasswordEncoder getPasswordEncoder()
-    {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
