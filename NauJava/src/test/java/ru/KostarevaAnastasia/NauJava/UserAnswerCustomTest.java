@@ -3,6 +3,7 @@ package ru.KostarevaAnastasia.NauJava;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.KostarevaAnastasia.NauJava.models.*;
@@ -40,6 +41,9 @@ class UserAnswerCustomTest {
     @Autowired
     private OptionRepository optionRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -65,11 +69,12 @@ class UserAnswerCustomTest {
         return optionRepository.save(option);
     }
 
-    private Question createQuestion(String text, String theme, QuestionType type) {
+    private Question createQuestion(String text, String theme, QuestionType type, User author) {
         Question question = new Question();
         question.setTextQuestion(text);
         question.setTheme(theme);
         question.setQuestionType(type);
+        question.setAuthor(author);
         entityManager.persist(question);
         entityManager.flush();
         return question;
@@ -99,7 +104,13 @@ class UserAnswerCustomTest {
         User user2 = createUser("user2");
         ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Math Test");
 
-        Question mathQuestion = createQuestion("2+2?", "Mathematics", QuestionType.SINGLE);
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
+        Question mathQuestion = createQuestion("2+2?", "Mathematics", QuestionType.SINGLE, author);
         Option opt1 = createOption("3", false, mathQuestion);
         Option opt2 = createOption("4", true, mathQuestion);
 
@@ -137,10 +148,16 @@ class UserAnswerCustomTest {
         User user = createUser("user");
         ru.KostarevaAnastasia.NauJava.models.Test test = createTest("General Knowledge");
 
-        Question math1 = createQuestion("2+2", "Mathematics", QuestionType.SINGLE);
-        Question math2 = createQuestion("3*3", "Mathematics", QuestionType.MULTIPLE);
-        Question history = createQuestion("WW2", "History", QuestionType.MULTIPLE);
-        Question physics = createQuestion("F=ma", "Physics", QuestionType.SINGLE);
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
+        Question math1 = createQuestion("2+2", "Mathematics", QuestionType.SINGLE, author);
+        Question math2 = createQuestion("3*3", "Mathematics", QuestionType.MULTIPLE, author);
+        Question history = createQuestion("WW2", "History", QuestionType.MULTIPLE, author);
+        Question physics = createQuestion("F=ma", "Physics", QuestionType.SINGLE, author);
 
         Option o1 = createOption("4", true, math1);
         Option o2 = createOption("9", true, math2);
@@ -167,9 +184,15 @@ class UserAnswerCustomTest {
         User user = createUser("user");
         ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Comparison Test");
 
-        Question math1 = createQuestion("Math Q1", "Mathematics", QuestionType.SINGLE);
-        Question math2 = createQuestion("Math Q2", "Mathematics", QuestionType.MULTIPLE);
-        Question history = createQuestion("Hist Q1", "History", QuestionType.MULTIPLE);
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
+        Question math1 = createQuestion("Math Q1", "Mathematics", QuestionType.SINGLE, author);
+        Question math2 = createQuestion("Math Q2", "Mathematics", QuestionType.MULTIPLE,author);
+        Question history = createQuestion("Hist Q1", "History", QuestionType.MULTIPLE, author);
 
         Option o1 = createOption("A", false, math1);
         Option o2 = createOption("B", true, math2);

@@ -1,19 +1,15 @@
 package ru.KostarevaAnastasia.NauJava;
 
-import java.util.Scanner;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.config.Customizer;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.KostarevaAnastasia.NauJava.security.CustomUserDetailsService;
 
@@ -22,10 +18,8 @@ import ru.KostarevaAnastasia.NauJava.security.CustomUserDetailsService;
 @Profile("!test")
 public class Config
 {
-    private final CustomUserDetailsService userDetailsService;
-    public Config(CustomUserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
     @Value("${app.name}")
     private String appName;
@@ -36,15 +30,19 @@ public class Config
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**")
+                )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/registration", "/login", "/logout").permitAll()
+                        .requestMatchers("/custom/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").hasRole("ADMIN")
-                        .requestMatchers("/create/**").hasAuthority("ROLE_CREATOR")
                         .requestMatchers("/api/reports/**").permitAll()
+                        .requestMatchers("/monitoring").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/tests/**").authenticated()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .permitAll()
+                .formLogin(form -> form.permitAll()
                 )
                 .userDetailsService(userDetailsService);
 

@@ -16,4 +16,23 @@ public interface QuestionService {
      * @param options список вариантов
      */
     void createQuestionWithOptions(Question question, List<Option> options);
+
+    /**
+     * Находит вопрос по id
+     * @param id идентификатор
+     * @return вопрос Question
+     */
+    Question findById(Long id);
+
+    /**
+     * Получает список всех вопросов
+     * @return список вопросов
+     */
+    List<Question> findAll();
+
+    /**
+     * Получает список всех вопросов и вариантами ответа на них
+     * @return список вопросов с вариантами
+     */
+    List<Question> findAllWithOptions();
 }

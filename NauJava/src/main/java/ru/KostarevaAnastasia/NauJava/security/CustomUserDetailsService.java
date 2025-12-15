@@ -1,5 +1,6 @@
 package ru.KostarevaAnastasia.NauJava.security;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Profile("!test")
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserService userService;
 

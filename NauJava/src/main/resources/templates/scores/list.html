@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои результаты</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+<h1>Мои результаты</h1>
+
+<div th:if="${scores.empty}">
+    Вы ещё не проходили ни одного теста.
+</div>
+
+<table id="scoresTable" th:unless="${scores.empty}">
+    <thead>
+    <tr>
+        <th>Тест</th>
+        <th>Балл</th>
+        <th>Дата</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="score : ${scores}">
+        <td th:text="${score.test.title}">Название теста</td>
+        <td th:text="${score.score}">0</td>
+        <td th:text="${#calendars.format(new java.util.Date(score.createdAt.time), 'dd.MM.yyyy HH:mm')}">Дата</td>
+    </tr>
+    </tbody>
+</table>
+
+<br/>
+<a href="/">На главную</a>
+</body>
+</html>

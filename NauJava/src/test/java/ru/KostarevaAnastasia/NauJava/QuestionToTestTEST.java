@@ -5,6 +5,7 @@ import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.KostarevaAnastasia.NauJava.models.*;
@@ -38,6 +39,9 @@ class QuestionToTestTEST {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -48,17 +52,24 @@ class QuestionToTestTEST {
     void testFindByTestIdAndSortingOrderBetween() {
         ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Test for sorting order");
         Long testId = test.getId();
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
 
         Question question1 = new Question();
         question1.setTextQuestion("Question 1");
         question1.setTheme("Theme 1");
         question1.setQuestionType(QuestionType.SINGLE);
+        question1.setAuthor(author);
         question1 = questionRepository.save(question1);
 
         Question question2 = new Question();
         question2.setTextQuestion("Question 2");
         question2.setTheme("Theme 2");
         question2.setQuestionType(QuestionType.MULTIPLE);
+        question2.setAuthor(author);
         question2 = questionRepository.save(question2);
 
         createQuestionToTest(test, question1, 1, 5);
@@ -102,11 +113,17 @@ class QuestionToTestTEST {
     void testFindByTestIdAndSortingOrderBetween_BoundaryValues() {
         ru.KostarevaAnastasia.NauJava.models.Test test = createTest("Boundary test");
         Long testId = test.getId();
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
 
         Question question = new Question();
         question.setTextQuestion("Boundary question");
         question.setTheme("Boundary theme");
         question.setQuestionType(QuestionType.SINGLE);
+        question.setAuthor(author);
         question = questionRepository.save(question);
         createQuestionToTest(test, question, 5, 7);
 

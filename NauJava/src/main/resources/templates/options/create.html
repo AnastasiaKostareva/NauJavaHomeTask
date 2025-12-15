@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить вариант ответа</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+
+<h2>Добавить вариант ответа к вопросу</h2>
+
+<form th:action="@{/options}" method="post">
+    <input type="hidden" name="questionId" th:value="${questionId}" />
+
+    <div class="form-group">
+        <label for="text">Текст варианта:</label>
+        <input type="text" id="text" name="text" required />
+    </div>
+
+    <div class="form-group">
+        <label for="correct">Правильный:</label>
+        <input type="checkbox" id="correct" name="correct" value="true" />
+    </div>
+
+    <div class="form-group">
+        <button type="submit">Сохранить вариант</button>
+    </div>
+</form>
+
+<a th:href="@{/questions/{id}(id=${questionId})}" class="back-link">← Назад к вопросу</a>
+
+</body>
+</html>

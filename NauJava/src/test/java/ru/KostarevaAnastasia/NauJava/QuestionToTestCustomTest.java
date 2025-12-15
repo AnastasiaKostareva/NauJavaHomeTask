@@ -3,6 +3,7 @@ package ru.KostarevaAnastasia.NauJava;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.KostarevaAnastasia.NauJava.models.*;
@@ -12,6 +13,7 @@ import ru.KostarevaAnastasia.NauJava.repositories.TestRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import ru.KostarevaAnastasia.NauJava.repositories.UserRepository;
 import ru.KostarevaAnastasia.NauJava.repositories.custom.CustomQuestionToTestRepository;
 
 import java.util.List;
@@ -35,6 +37,12 @@ class QuestionToTestCustomTest {
     @Autowired
     private QuestionToTestRepository questionToTestRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -43,11 +51,17 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_BasicScenario() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
         var test = createTest("Basic Test");
-        Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE);
-        Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE);
-        Question question3 = createQuestion("Question 3", "History", QuestionType.MULTIPLE);
-        Question question4 = createQuestion("Question 4", "Biology", QuestionType.SINGLE);
+        Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE, author);
+        Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE, author);
+        Question question3 = createQuestion("Question 3", "History", QuestionType.MULTIPLE, author);
+        Question question4 = createQuestion("Question 4", "Biology", QuestionType.SINGLE, author);
 
         createQuestionToTest(test, question1, 1, 5);
         createQuestionToTest(test, question2, 2, 10);
@@ -74,9 +88,14 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_BoundaryValues() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
         var test = createTest("Boundary Test");
-        Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE);
-        Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE);
+        Question question1 = createQuestion("Question 1", "Math", QuestionType.SINGLE, author);
+        Question question2 = createQuestion("Question 2", "Physics", QuestionType.MULTIPLE, author);
 
         createQuestionToTest(test, question1, 5, 5);
         createQuestionToTest(test, question2, 10, 8);
@@ -111,8 +130,13 @@ class QuestionToTestCustomTest {
      */
     @Test
     void testFindQuestionToTestByTestIDAndSortingOrderBetween_EmptyResult() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
         var test = createTest("Empty Result Test");
-        Question question = createQuestion("Question 1", "Math", QuestionType.SINGLE);
+        Question question = createQuestion("Question 1", "Math", QuestionType.SINGLE, author);
         createQuestionToTest(test, question, 10, 5);
 
         List<QuestionToTest> result = customQuestionToTestRepository
@@ -133,11 +157,12 @@ class QuestionToTestCustomTest {
         return testRepository.save(test);
     }
 
-    private Question createQuestion(String text, String theme, QuestionType type) {
+    private Question createQuestion(String text, String theme, QuestionType type, User author) {
         Question question = new Question();
         question.setTextQuestion(text);
         question.setTheme(theme);
         question.setQuestionType(type);
+        question.setAuthor(author);
         return questionRepository.save(question);
     }
 

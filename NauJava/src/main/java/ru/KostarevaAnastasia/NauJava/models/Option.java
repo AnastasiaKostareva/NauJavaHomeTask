@@ -26,14 +26,14 @@ public class Option {
     }
 
     @Column
-    private boolean isCorrect;
+    private boolean correct;
 
-    public boolean getCorrect() {
-        return isCorrect;
+    public boolean isCorrect() {
+        return correct;
     }
 
     public void setCorrect(boolean correct) {
-        isCorrect = correct;
+        this.correct = correct;
     }
 
     public Question getQuestion() {

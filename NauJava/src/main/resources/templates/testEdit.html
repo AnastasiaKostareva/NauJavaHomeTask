@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${test.title}">Редактирование теста</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<h1 th:text="${test.title}">Название теста</h1>
+<p>Автор: <span th:text="${test.creator?.username ?: 'Не указан'}"></span></p>
+
+<h2>Вопросы в тесте</h2>
+<div th:if="${#lists.isEmpty(test.questionToTests)}">
+    В тесте пока нет вопросов.
+</div>
+<ul>
+    <li th:each="qt : ${test.questionToTests}">
+        <strong th:text="${qt.question.textQuestion}">Вопрос</strong><br/>
+        Тема: <span th:text="${qt.question.theme}"></span> |
+        Баллы: <span th:text="${qt.numberPoints}"></span> |
+        Порядок: <span th:text="${qt.sortingOrder}"></span>
+
+        <form th:action="@{/tests/{testId}/questions/{questionId}/delete(testId=${test.id}, questionId=${qt.question.id})}"
+              method="post" style="display:inline;">
+            <button type="submit" onclick="return confirm('Удалить вопрос?')">Удалить</button>
+        </form>
+    </li>
+</ul>
+
+<div sec:authorize="hasAnyRole('CREATOR','ADMIN')" style="margin-top: 20px;">
+    <a th:href="@{/tests/{id}/questions/add(id=${test.id})}"
+       class="btn">Добавить существующий вопрос</a>
+
+    <a th:href="@{/tests/{id}/questions/create(id=${test.id})}"
+       class="btn">Создать и добавить новый вопрос</a>
+</div>
+
+<br/>
+<a href="/tests">← Назад к списку тестов</a>
+</body>
+</html>

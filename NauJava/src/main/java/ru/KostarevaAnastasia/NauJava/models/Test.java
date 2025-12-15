@@ -2,6 +2,9 @@ package ru.KostarevaAnastasia.NauJava.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "tests")
 public class Test {
@@ -13,6 +16,8 @@ public class Test {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private User creator;
+    @OneToMany(mappedBy = "test", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<QuestionToTest> questionToTests = new ArrayList<>();
 
     public Test(Long id, String title, User creator) {
         this.id = id;
@@ -44,6 +49,12 @@ public class Test {
     public void setCreator(User user)
     {
         this.creator = user;
+    }
+    public List<QuestionToTest> getQuestionToTests() {
+        return questionToTests;
+    }
+    public void setQuestionToTests(List<QuestionToTest> questionToTests) {
+        this.questionToTests = questionToTests;
     }
 
     @Override

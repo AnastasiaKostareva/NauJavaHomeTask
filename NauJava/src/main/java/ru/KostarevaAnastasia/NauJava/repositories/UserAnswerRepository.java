@@ -9,10 +9,10 @@ import ru.KostarevaAnastasia.NauJava.models.UserAnswerId;
 
 import java.util.List;
 
-@RepositoryRestResource(path = "answers")
 /**
  * Репозиторий для сущности UserAnswer с составным ключом UserAnswerId
  */
+@RepositoryRestResource(path = "answers")
 public interface UserAnswerRepository extends CrudRepository<UserAnswer, UserAnswerId> {
     /**
      * Находит ответы пользователя по идентификатору пользователя и теме вопроса

@@ -1,14 +1,15 @@
 package ru.KostarevaAnastasia.NauJava.service;
 
 import org.springframework.stereotype.Service;
+import ru.KostarevaAnastasia.NauJava.models.Role;
 import ru.KostarevaAnastasia.NauJava.models.User;
 import ru.KostarevaAnastasia.NauJava.repositories.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService{
-
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -22,6 +23,32 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User addUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public boolean hasRole(String username, Role role) {
+        if (username == null || role == null) {
+            return false;
+        }
+        return userRepository.findByUsername(username)
+                .map(user -> user.getRole() == role)
+                .orElse(false);
+    }
+
+    @Override
+    public List<User> getAllUsers()
+    {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public User save(User user) {
         return userRepository.save(user);
     }
 }

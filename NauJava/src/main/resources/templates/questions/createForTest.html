@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Создать вопрос с вариантами</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+    <script>
+        function addOption() {
+            const container = document.getElementById('options');
+            const index = container.children.length;
+            const div = document.createElement('div');
+            div.innerHTML = `
+                <label>Вариант ${index + 1}:
+                    <input type="text" name="optionText[${index}]" required />
+                    <label>
+                        <input type="hidden" name="optionCorrect[${index}]" value="false" />
+                        <input type="checkbox" name="optionCorrect[${index}]" value="true" />
+                        Правильный
+                    </label>
+                </label>
+                <button type="button" onclick="this.parentElement.remove()">Удалить</button>
+                <br><br>
+            `;
+            container.appendChild(div);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('options');
+            container.addEventListener('change', (e) => {
+                if (e.target.type === 'checkbox') {
+                    const index = e.target.name.match(/\[(\d+)\]/)[1];
+                    const hiddenInput = document.querySelector(`input[name="optionCorrect[${index}]"][type="hidden"]`);
+                    if (e.target.checked) {
+                        hiddenInput.remove();
+                    } else {
+                        const newHidden = document.createElement('input');
+                        newHidden.type = 'hidden';
+                        newHidden.name = `optionCorrect[${index}]`;
+                        newHidden.value = 'false';
+                        e.target.parentNode.insertBefore(newHidden, e.target);
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+<h2>Создать вопрос с вариантами ответов</h2>
+
+<form th:object="${questionDto}" th:action="@{/tests/{testId}/questions/create(testId=${testId})}" method="post">
+    <div>
+        <label>Текст вопроса:</label>
+        <input type="text" name="textQuestion" required minlength="5" />
+    </div>
+    <div>
+        <label>Тема:</label>
+        <input type="text" name="theme" required />
+    </div>
+    <div>
+        <label>Тип вопроса:</label>
+        <select name="questionType" required>
+            <option th:each="type : ${questionTypes}" th:value="${type}" th:text="${type}"></option>
+        </select>
+    </div>
+    <div>
+        <label>Баллы за вопрос:</label>
+        <input type="number" name="points" value="1" min="1" required />
+    </div>
+    <div>
+        <label>Порядковый номер:</label>
+        <input type="number" name="orderIndex" th:value="${nextOrder}" required />
+    </div>
+
+    <h3>Варианты ответов</h3>
+    <div id="options">
+    </div>
+    <button type="button" onclick="addOption()">+ Добавить вариант</button>
+    <br><br>
+
+    <button type="submit">Создать вопрос</button>
+    <a th:href="@{/questions/list}">Отмена</a>
+</form>
+</body>
+</html>

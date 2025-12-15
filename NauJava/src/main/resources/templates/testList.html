@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Список тестов</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<h1>Доступные тесты</h1>
+
+<ul>
+    <li th:each="test : ${tests}">
+        <span th:text="${test.title}">Название теста</span>
+
+        <th:block th:if="${#lists.size(test.questionToTests) > 0}">
+            <a th:href="@{/tests/{id}(id=${test.id})}">Начать тест</a>
+        </th:block>
+        <th:block th:unless="${#lists.size(test.questionToTests) > 0}">
+            Тест пуст
+        </th:block>
+
+        <span sec:authorize="hasAnyRole('CREATOR','ADMIN')">
+            | <a th:href="@{/tests/{id}/edit(id=${test.id})}">Редактировать</a>
+        </span>
+    </li>
+</ul>
+
+<a href="/">На главную</a>
+</body>
+</html>

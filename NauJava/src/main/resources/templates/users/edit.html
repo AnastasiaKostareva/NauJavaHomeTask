@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Редактировать пользователя</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<h2>Редактировать пользователя</h2>
+<form th:action="@{/users/edit/{id}(id=${user.id})}" method="post">
+    <div>
+        <label>Имя:</label>
+        <input type="text" name="username" th:value="${user.username}" required />
+    </div>
+    <div>
+        <label>Роль:</label>
+        <select name="role">
+            <option th:each="role : ${roles}"
+                    th:value="${role}"
+                    th:text="${role}"
+                    th:selected="${role == user.role}"></option>
+        </select>
+    </div>
+    <button type="submit">Сохранить</button>
+    <a href="/users">Отмена</a>
+</form>
+</body>
+</html>

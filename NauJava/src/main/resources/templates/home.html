@@ -1,11 +1,54 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Главная</title>
+    <title>Главная — TestMaster</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
 </head>
 <body>
-<h1 id="welcomeMessage">Добро пожаловать!</h1>
-<a href="/logout"><button type="submit" id="logoutButton">Выйти</button></a>
+<h1 id="welcomeMessage">Добро пожаловать, <span sec:authentication="name">пользователь</span>!</h1>
+
+<div class="menu">
+    <a href="/tests">Список тестов</a>
+    <a href="/scores">Мои результаты</a>
+
+    <div sec:authorize="hasAnyRole('CREATOR','ADMIN')">
+        <a href="/questions">Список вопросов</a>
+        <a href="/tests/new">Создать тест</a>
+        <a href="/questions/new">Создать вопрос</a>
+    </div>
+
+    <div sec:authorize="hasRole('ADMIN')">
+        <a href="/users">Управление пользователями</a>
+    </div>
+</div>
+
+<form th:action="@{/logout}" method="post" style="margin-top: 30px;">
+    <button type="submit" id="logoutButton">Выйти</button>
+</form>
 </body>
 </html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${test.testName} ?: 'Тест'">Начало теста</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<h1 th:text="${test.testName} ?: 'Тест'">Название теста</h1>
+
+<div th:each="question, qStat : ${test.questions}">
+    <h3 th:text="${qStat.index + 1 + '. ' + question.text}">Вопрос</h3>
+    <div th:if="${question.type == T(ru.KostarevaAnastasia.NauJava.models.QuestionType).SINGLE}">
+        <div th:each="option, oStat : ${question.options}">
+            <label>
+                <input type="radio"
+                       th:name="'question_' + ${qStat.index}"
+                       th:value="${option.id}" />
+                <span th:text="${option.text}">Вариант</span>
+            </label><br/>
+        </div>
+    </div>
+    <div th:if="${question.type == T(ru.KostarevaAnastasia.NauJava.models.QuestionType).MULTIPLE}">
+        <div th:each="option, oStat : ${question.options}">
+            <label>
+                <input type="checkbox"
+                       th:name="'question_' + ${qStat.index}"
+                       th:value="${option.id}" />
+                <span th:text="${option.text}">Вариант</span>
+            </label><br/>
+        </div>
+    </div>
+</div>
+
+<button type="button" onclick="submitTest()">Завершить тест</button>
+
+<script th:inline="javascript">
+    function submitTest() {
+        const answers = [];
+        const questions = /*[[${test.questions}]]*/ [];
+
+        questions.forEach((q, qIndex) => {
+            let selected = [];
+            if (q.type === 'SINGLE') {
+                const radio = document.querySelector(`input[name='question_${qIndex}']:checked`);
+                if (radio) {
+                    selected = [Number(radio.value)];
+                }
+            } else if (q.type === 'MULTIPLE') {
+                const checkboxes = document.querySelectorAll(`input[name='question_${qIndex}']:checked`);
+                selected = Array.from(checkboxes).map(cb => Number(cb.value));
+            }
+
+            if (selected.length > 0) {
+                answers.push({
+                    questionId: q.id,
+                    selectedOptionIds: selected
+                });
+            }
+        });
+
+        fetch(/*[[@{/api/tests/{testId}/submit(testId=${test.testId})}]]*/, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(answers)
+        })
+        .then(res => res.ok ? res.json() : Promise.reject('Ошибка сервера'))
+        .then(data => {
+            alert(`Ваш результат: ${data.score} из ${data.maxScore} (${data.percentage}%)`);
+            window.location.href = '/scores';
+        })
+        .catch(err => {
+            alert('Ошибка: ' + err);
+        });
+    }
+</script>
+</body>
+</html>

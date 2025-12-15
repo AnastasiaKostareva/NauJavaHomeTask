@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Добавить вопрос к тесту</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; }
+        h1 { color: #2c3e50; }
+        .menu { margin: 20px 0; }
+        .menu a {
+            display: inline-block;
+            margin: 8px;
+            padding: 10px 16px;
+            text-decoration: none;
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+        }
+        .menu a:hover { background-color: #2980b9; }
+        #logoutButton {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            padding: 10px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #logoutButton:hover { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<h1>Добавить вопрос к тесту: <span th:text="${test.title}">Тест</span></h1>
+
+<form th:object="${questionToTest}" th:action="@{/tests/{testId}/questions(testId=${test.id})}" method="post">
+    <div>
+        <label>Выберите вопрос:</label>
+        <select th:field="*{question.id}" required>
+            <option value="">-- Выберите вопрос --</option>
+            <option th:each="q : ${allQuestions}"
+                    th:value="${q.id}"
+                    th:text="${q.textQuestion}">Вопрос</option>
+        </select>
+    </div>
+
+    <div>
+        <label for="points">Баллы за вопрос:</label>
+        <input type="number" id="points" th:field="*{numberPoints}" min="1" value="10" required />
+    </div>
+
+    <div>
+        <label for="orderIndex">Порядок в тесте:</label>
+        <input type="number"
+               id="orderIndex"
+               name="orderIndex"
+               th:value="${nextOrder}"
+               min="1"
+               required />
+    </div>
+
+    <button type="submit">Добавить</button>
+</form>
+
+<a th:href="@{/tests/{id}(id=${test.id})}">← Назад к тесту</a>
+</body>
+</html>

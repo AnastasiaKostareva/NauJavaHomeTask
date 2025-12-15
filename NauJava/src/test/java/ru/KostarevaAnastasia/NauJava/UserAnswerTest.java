@@ -3,6 +3,7 @@ package ru.KostarevaAnastasia.NauJava;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import ru.KostarevaAnastasia.NauJava.models.*;
@@ -32,6 +33,9 @@ public class UserAnswerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     private User createUser(Long id) {
         User user = new User();
         user.setId(id);
@@ -43,22 +47,31 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
         Question questionMath1 = new Question();
         questionMath1.setTextQuestion("What is 2+2?");
         questionMath1.setTheme("Mathematics");
         questionMath1.setQuestionType(QuestionType.SINGLE);
+        questionMath1.setAuthor(author);
         questionMath1 = questionRepository.save(questionMath1);
 
         Question questionMath2 = new Question();
         questionMath2.setTextQuestion("What is 3*3?");
         questionMath2.setTheme("Mathematics");
         questionMath2.setQuestionType(QuestionType.SINGLE);
+        questionMath2.setAuthor(author);
         questionMath2 = questionRepository.save(questionMath2);
 
         Question questionHistory = new Question();
         questionHistory.setTextQuestion("When was WWII?");
         questionHistory.setTheme("History");
         questionHistory.setQuestionType(QuestionType.SINGLE);
+        questionHistory.setAuthor(author);
         questionHistory = questionRepository.save(questionHistory);
 
         Option optionMath1 = optionRepository.save(createOption(questionMath1));
@@ -142,6 +155,12 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_NoAnswersForTheme() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
         User user = new User();
         user.setUsername("Test User");
         user.setRole(Role.USER);
@@ -155,7 +174,9 @@ public class UserAnswerTest {
         questionPhysics.setTextQuestion("What is gravity?");
         questionPhysics.setTheme("Physics");
         questionPhysics.setQuestionType(QuestionType.SINGLE);
+        questionPhysics.setAuthor(author);
         questionPhysics = questionRepository.save(questionPhysics);
+        questionPhysics.setAuthor(author);
 
         Option option = optionRepository.save(createOption(questionPhysics));
 
@@ -197,6 +218,12 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_NonExistentTheme() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
         User user = new User();
         user.setUsername("Test User");
         user.setRole(Role.USER);
@@ -210,6 +237,7 @@ public class UserAnswerTest {
         question.setTextQuestion("Sample question");
         question.setTheme("ExistingTheme");
         question.setQuestionType(QuestionType.SINGLE);
+        question.setAuthor(author);
         question = questionRepository.save(question);
 
         Option option = optionRepository.save(createOption(question));
@@ -238,6 +266,12 @@ public class UserAnswerTest {
      */
     @Test
     void testFindByUserIdAndQuestionTheme_MultipleUsers() {
+        User author = new User();
+        author.setUsername("testuser");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setRole(Role.CREATOR);
+        author = userRepository.save(author);
+
         User user1 = new User();
         user1.setUsername("Test User");
         user1.setRole(Role.USER);
@@ -256,6 +290,7 @@ public class UserAnswerTest {
         questionMath.setTextQuestion("Algebra question");
         questionMath.setTheme("Mathematics");
         questionMath.setQuestionType(QuestionType.SINGLE);
+        questionMath.setAuthor(author);
         questionMath = questionRepository.save(questionMath);
 
         Option option = optionRepository.save(createOption(questionMath));

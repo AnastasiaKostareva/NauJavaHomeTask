@@ -10,6 +10,7 @@ import org.springframework.transaction.TransactionStatus;
 import ru.KostarevaAnastasia.NauJava.models.Option;
 import ru.KostarevaAnastasia.NauJava.models.Question;
 import ru.KostarevaAnastasia.NauJava.models.QuestionType;
+import ru.KostarevaAnastasia.NauJava.models.User;
 import ru.KostarevaAnastasia.NauJava.repositories.OptionRepository;
 import ru.KostarevaAnastasia.NauJava.repositories.QuestionRepository;
 import ru.KostarevaAnastasia.NauJava.service.QuestionServiceImpl;
@@ -39,10 +40,11 @@ public class QuestionServiceTest {
     @Test
     void shouldCreateQuestionWithOptions()
     {
-        Question question = new Question(null, "test question", "test", QuestionType.SINGLE);
+        User author = new User();
+        Question question = new Question(null, "test question", "test", QuestionType.SINGLE, author);
         List<Option> options = Arrays.asList(new Option(), new Option());
 
-        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE);
+        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE, author);
         when(mockQuestionRepo.save(question)).thenReturn(afterSaveQuestion);
 
         TransactionStatus status = mock(TransactionStatus.class);
@@ -60,10 +62,10 @@ public class QuestionServiceTest {
     @Test
     void shouldCreateQuestionWithEmptyOptions()
     {
-        Question question = new Question(null, "test question", "test", QuestionType.SINGLE);
+        Question question = new Question(null, "test question", "test", QuestionType.SINGLE, new User());
         List<Option> options = new ArrayList<>();
 
-        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE);
+        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE, new User());
         when(mockQuestionRepo.save(question)).thenReturn(afterSaveQuestion);
 
         TransactionStatus status = mock(TransactionStatus.class);
@@ -78,7 +80,7 @@ public class QuestionServiceTest {
     @Test
     void shouldRollbackTransactionWhenQuestionSaveFails()
     {
-        Question question = new Question(null, "test question", "test", QuestionType.SINGLE);
+        Question question = new Question(null, "test question", "test", QuestionType.SINGLE, new User());
         List<Option> options = Arrays.asList(new Option(), new Option());
 
         TransactionStatus status = mock(TransactionStatus.class);
@@ -99,10 +101,10 @@ public class QuestionServiceTest {
     @Test
     void shouldRollbackTransactionWhenOptionSaveFails()
     {
-        Question question = new Question(null, "test question", "test", QuestionType.SINGLE);
+        Question question = new Question(null, "test question", "test", QuestionType.SINGLE, new User());
         List<Option> options = Arrays.asList(new Option(), new Option());
 
-        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE);
+        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE, new User());
         when(mockQuestionRepo.save(question)).thenReturn(afterSaveQuestion);
 
         TransactionStatus status = mock(TransactionStatus.class);
@@ -124,10 +126,10 @@ public class QuestionServiceTest {
     @Test
     void shouldRollbackTransactionWhenTransactionFails()
     {
-        Question question = new Question(null, "test question", "test", QuestionType.SINGLE);
+        Question question = new Question(null, "test question", "test", QuestionType.SINGLE, new User());
         List<Option> options = Arrays.asList(new Option(), new Option());
 
-        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE);
+        Question afterSaveQuestion = new Question(1L, "test question", "test", QuestionType.SINGLE, new User());
         when(mockQuestionRepo.save(question)).thenReturn(afterSaveQuestion);
 
         TransactionStatus status = mock(TransactionStatus.class);

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список вопросов</title>
+    <style>
+        .question {
+            margin-bottom: 2em;
+            padding: 1em;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            background-color: #f9f9f9;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: #666;
+        }
+        .theme {
+            font-style: italic;
+            color: #555;
+            margin-bottom: 0.5em;
+        }
+        .question-type {
+            background-color: #e0f7fa;
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<h1>Вопросы</h1>
+
+<div th:if="${message}" th:text="${message}" style="color: green; margin-bottom: 1em;"></div>
+
+<div th:each="q : ${questions}" class="question">
+    <div class="theme" th:text="'Тема: ' + ${q.theme}"></div>
+    <h3 th:text="${q.textQuestion}">Текст вопроса</h3>
+    <span class="question-type" th:text="${q.questionType}">Тип</span>
+    <br><br>
+
+    <strong>Варианты ответов:</strong>
+    <ul>
+        <li th:each="opt : ${q.options}"
+            th:class="${opt.correct} ? 'correct' : 'incorrect'"
+            th:text="${opt.text} + (${opt.correct ? 'Правильный' : ''})">
+            Вариант
+        </li>
+    </ul>
+
+    <small>Автор: <span th:text="${q.author.username}">автор</span></small>
+</div>
+
+<a href="/questions/new">Создать вопрос</a>
+</body>
+</html>

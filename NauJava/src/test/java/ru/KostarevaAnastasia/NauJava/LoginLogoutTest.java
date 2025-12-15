@@ -56,13 +56,9 @@ public class LoginLogoutTest {
         WebElement logoutButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
         assertTrue(logoutButton.isDisplayed(), "The logout button was not found");
         logoutButton.click();
-        wait.until(ExpectedConditions.urlContains("/logout"));
 
-        WebElement confirmLogoutButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button[type='submit']")));
-        confirmLogoutButton.click();
-
-        wait.until(ExpectedConditions.urlContains("/login"));
+        wait.until(ExpectedConditions.urlContains("/login?logout"));
         String currentUrl = driver.getCurrentUrl();
-        assertTrue(currentUrl.contains("/login"), "Not forwarded to the login");
+        assertTrue(currentUrl.contains("/login?logout"), "Not forwarded to the login");
     }
 }
