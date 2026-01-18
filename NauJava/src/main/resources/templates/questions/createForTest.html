@@ -17,15 +17,6 @@
             border-radius: 4px;
         }
         .menu a:hover { background-color: #2980b9; }
-        #logoutButton {
-            background-color: #e74c3c;
-            border: none;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #logoutButton:hover { background-color: #c0392b; }
     </style>
     <script>
         function addOption() {
@@ -91,6 +82,10 @@
     <div>
         <label>Порядковый номер:</label>
         <input type="number" name="orderIndex" th:value="${nextOrder}" required />
+    </div>
+    <div>
+        <label>Ваше имя:</label>
+        <input type="text" name="authorName" required />
     </div>
 
     <h3>Варианты ответов</h3>

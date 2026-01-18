@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Главная — TestMaster</title>
@@ -18,37 +17,17 @@
             border-radius: 4px;
         }
         .menu a:hover { background-color: #2980b9; }
-        #logoutButton {
-            background-color: #e74c3c;
-            border: none;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #logoutButton:hover { background-color: #c0392b; }
     </style>
 </head>
 <body>
-<h1 id="welcomeMessage">Добро пожаловать, <span sec:authentication="name">пользователь</span>!</h1>
+<h1>Добро пожаловать в TestMaster!</h1>
 
 <div class="menu">
     <a href="/tests">Список тестов</a>
     <a href="/scores">Мои результаты</a>
-
-    <div sec:authorize="hasAnyRole('CREATOR','ADMIN')">
-        <a href="/questions">Список вопросов</a>
-        <a href="/tests/new">Создать тест</a>
-        <a href="/questions/new">Создать вопрос</a>
-    </div>
-
-    <div sec:authorize="hasRole('ADMIN')">
-        <a href="/users">Управление пользователями</a>
-    </div>
+    <a href="/questions">Список вопросов</a>
+    <a href="/tests/new">Создать тест</a>
+    <a href="/questions/new">Создать вопрос</a>
 </div>
-
-<form th:action="@{/logout}" method="post" style="margin-top: 30px;">
-    <button type="submit" id="logoutButton">Выйти</button>
-</form>
 </body>
 </html>

@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import ru.KostarevaAnastasia.NauJava.models.Role;
 import ru.KostarevaAnastasia.NauJava.models.User;
 import ru.KostarevaAnastasia.NauJava.repositories.UserRepository;
 import ru.KostarevaAnastasia.NauJava.service.UserServiceImpl;

@@ -1,7 +1,6 @@
 package ru.KostarevaAnastasia.NauJava.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,7 +11,6 @@ import ru.KostarevaAnastasia.NauJava.dto.OptionCreateDto;
 import ru.KostarevaAnastasia.NauJava.service.OptionService;
 
 @Controller
-@PreAuthorize("hasAnyRole('CREATOR', 'ADMIN')")
 public class OptionWebController {
     @Autowired
     private OptionService optionService;
@@ -30,12 +28,11 @@ public class OptionWebController {
             @RequestParam String text,
             @RequestParam(required = false, defaultValue = "false") boolean correct,
             @RequestParam Long questionId,
-            org.springframework.security.core.Authentication authentication,
             RedirectAttributes redirectAttributes) {
 
         OptionCreateDto dto = new OptionCreateDto(text, correct, questionId);
 
-        optionService.createOption(dto, authentication.getName());
+        optionService.createOption(dto);
 
         redirectAttributes.addFlashAttribute("message", "Вариант успешно добавлен!");
         return "redirect:/questions/" + questionId;

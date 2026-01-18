@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import ru.KostarevaAnastasia.NauJava.dto.OptionCreateDto;
 import ru.KostarevaAnastasia.NauJava.models.Option;
 import ru.KostarevaAnastasia.NauJava.models.Question;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(TestSecurityConfig.class)
-@EnableWebSecurity
 public class OptionControllerTest {
     @LocalServerPort
     int port;
@@ -52,7 +50,7 @@ public class OptionControllerTest {
 
         OptionCreateDto dto = new OptionCreateDto("Correct answer", true, 1L);
 
-        when(optionService.createOption(eq(dto), eq("creator1")))
+        when(optionService.createOption(eq(dto)))
                 .thenReturn(savedOption);
         String requestBody = """
         {

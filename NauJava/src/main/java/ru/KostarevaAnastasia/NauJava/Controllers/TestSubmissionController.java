@@ -3,9 +3,8 @@ package ru.KostarevaAnastasia.NauJava.Controllers;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import ru.KostarevaAnastasia.NauJava.dto.TestSubmissionRequest;
 import ru.KostarevaAnastasia.NauJava.dto.UserAnswerDto;
 import ru.KostarevaAnastasia.NauJava.models.*;
 import ru.KostarevaAnastasia.NauJava.repositories.OptionRepository;
@@ -21,18 +20,15 @@ import java.util.stream.StreamSupport;
 @RestController
 @RequestMapping("/api/tests")
 public class TestSubmissionController {
+
     @Autowired
     private UserAnswerRepository userAnswerRepository;
-
     @Autowired
     private QuestionToTestRepository questionToTestRepository;
-
     @Autowired
     private OptionRepository optionRepository;
-
     @Autowired
     private ScoreService scoreService;
-
     @Autowired
     private UserService userService;
 
@@ -40,21 +36,23 @@ public class TestSubmissionController {
     @Transactional
     public ResponseEntity<Map<String, Object>> submitTest(
             @PathVariable Long testId,
-            @RequestBody List<UserAnswerDto> answers,
-            Authentication authentication) {
+            @RequestBody TestSubmissionRequest request) {
 
-        String username = authentication.getName();
-        User user = userService.getUsersByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        String participantName = request.participantName();
+        if (participantName == null || participantName.trim().isEmpty()) {
+            participantName = "anonymous";
+        }
+        User user = userService.getOrCreateUser(participantName);
 
         List<QuestionToTest> qtList = questionToTestRepository.findByTestIdOrderBySortingOrderAsc(testId);
         Map<Long, QuestionToTest> questionMap = qtList.stream()
                 .collect(Collectors.toMap(qt -> qt.getQuestion().getId(), qt -> qt));
 
-        List<Long> allOptionIds = answers.stream()
+        List<Long> allOptionIds = request.answers().stream() // ← используем request.answers()
                 .flatMap(a -> a.selectedOptionIds().stream())
                 .distinct()
                 .collect(Collectors.toList());
+
         Iterable<Option> iterable = optionRepository.findAllById(allOptionIds);
         List<Option> allOptions = StreamSupport.stream(iterable.spliterator(), false)
                 .collect(Collectors.toList());
@@ -66,7 +64,7 @@ public class TestSubmissionController {
 
         List<UserAnswer> userAnswers = new ArrayList<>();
 
-        for (UserAnswerDto dto : answers) {
+        for (UserAnswerDto dto : request.answers()) { // ← здесь тоже
             QuestionToTest qt = questionMap.get(dto.questionId());
             if (qt == null) continue;
 
@@ -115,13 +113,13 @@ public class TestSubmissionController {
         }
 
         try {
-            List<UserAnswer> saved = new ArrayList<>();
-            userAnswerRepository.saveAll(userAnswers).forEach(saved::add);
+            userAnswerRepository.saveAll(userAnswers);
         } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("Ошибка сохранения ответов", e);
         }
-        scoreService.saveScore(testId, username, totalScore);
+
+        scoreService.saveScore(testId, participantName, totalScore);
 
         Map<String, Object> result = new HashMap<>();
         result.put("score", totalScore);

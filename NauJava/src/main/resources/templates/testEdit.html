@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title th:text="${test.title}">Редактирование теста</title>
@@ -18,15 +17,6 @@
             border-radius: 4px;
         }
         .menu a:hover { background-color: #2980b9; }
-        #logoutButton {
-            background-color: #e74c3c;
-            border: none;
-            color: white;
-            padding: 10px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #logoutButton:hover { background-color: #c0392b; }
     </style>
 </head>
 <body>
@@ -51,7 +41,7 @@
     </li>
 </ul>
 
-<div sec:authorize="hasAnyRole('CREATOR','ADMIN')" style="margin-top: 20px;">
+<div style="margin-top: 20px;">
     <a th:href="@{/tests/{id}/questions/add(id=${test.id})}"
        class="btn">Добавить существующий вопрос</a>
 

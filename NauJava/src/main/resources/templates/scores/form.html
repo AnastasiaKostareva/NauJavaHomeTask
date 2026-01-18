@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Мои результаты</title>
+</head>
+<body>
+<h2>Введите ваше имя, чтобы посмотреть результаты</h2>
+
+<form method="post" th:action="@{/scores}">
+    <label>
+        Имя:
+        <input type="text" name="participantName" required />
+    </label>
+    <button type="submit">Показать результаты</button>
+</form>
+
+<a href="/">На главную</a>
+</body>
+</html>

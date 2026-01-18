@@ -1,9 +1,6 @@
 package ru.KostarevaAnastasia.NauJava.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -48,7 +45,6 @@ public class QuestionToTestWebController {
     }
 
     @PostMapping("/{questionId}/delete")
-    @PreAuthorize("@testSecurityService.canEditTest(authentication, #testId)")
     public String removeQuestionFromTest(
             @PathVariable Long testId,
             @PathVariable Long questionId,
@@ -99,7 +95,7 @@ public class QuestionToTestWebController {
             @PathVariable Long testId,
             @ModelAttribute QuestionFormDto dto,
             BindingResult bindingResult,
-            Authentication authentication,
+            @RequestParam String authorName,
             RedirectAttributes redirectAttrs,
             @RequestParam(defaultValue = "1") Integer points,
             @RequestParam(defaultValue = "1") Integer orderIndex) {
@@ -116,8 +112,7 @@ public class QuestionToTestWebController {
         question.setTheme(dto.theme());
         question.setQuestionType(dto.questionType());
 
-        User author = userService.getUsersByUsername(authentication.getName())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        User author = userService.getOrCreateUser(authorName);
         question.setAuthor(author);
 
         List<Option> options = IntStream.range(0, dto.optionText().size())

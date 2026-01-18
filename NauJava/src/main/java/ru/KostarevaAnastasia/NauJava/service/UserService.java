@@ -1,6 +1,5 @@
 package ru.KostarevaAnastasia.NauJava.service;
 
-import ru.KostarevaAnastasia.NauJava.models.Role;
 import ru.KostarevaAnastasia.NauJava.models.User;
 
 import java.util.List;
@@ -26,14 +25,6 @@ public interface UserService {
     User addUser(User user);
 
     /**
-     * Проверяет роль у пользователя
-     * @param username имя пользователя
-     * @param role проверяемая роль
-     * @return является ли пользователь такой-то ролью
-     */
-    boolean hasRole(String username, Role role);
-
-    /**
      * Получает список всех пользователей приложения
      * @return список пользователей
      */
@@ -52,4 +43,11 @@ public interface UserService {
      * @return сохраненный пользователь
      */
     User save(User user);
+
+    /**
+     * Получает существующего пользователя по имени или создаёт нового, если не существует.
+     * @param username имя пользователя
+     * @return пользователь
+     */
+    User getOrCreateUser(String username);
 }
